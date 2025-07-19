@@ -1,0 +1,18 @@
+{
+  "timestamp": "20250719_174814",
+  "city": "Delhi",
+  "environment": {
+    "temperature": 35.6,
+    "humidity": 49,
+    "wind_speed": 4.92,
+    "aqi": 58
+  },
+  "music_parameters": {
+    "key_mode": "major",
+    "tempo_bpm": 131,
+    "instrument": "piano",
+    "density": 9
+  },
+  "midi_file": "output\\eco_20250719_174814.mid",
+  "wav_file": "output\\eco_20250719_174814.wav"
+}

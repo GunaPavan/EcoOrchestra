@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecoorchestra"
+version = "0.1.0"
+description = "Generative music from real-time environmental data"
+authors = [{name = "Pavan Yedida"}]
+dependencies = [
+    "mido",
+    "python-rtmidi",
+    "pyfluidsynth",
+    "pydub",
+    "requests",
+    "streamlit",
+    "python-dotenv"
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "pre-commit"]
+
+[tool.setuptools]
+packages = ["ecoorchestra"]
+
+[tool.setuptools.package-dir]
+ecoorchestra = "src/ecoorchestra"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
