@@ -14,8 +14,12 @@ dependencies = [
     "pydub",
     "requests",
     "streamlit",
-    "python-dotenv"
+    "python-dotenv",
+    "torch",            
+    "transformers",
+    "scipy"     
 ]
+
 
 [project.optional-dependencies]
 dev = ["ruff", "pytest", "pre-commit"]

@@ -6,11 +6,14 @@ import streamlit as st
 from ecoorchestra.data.fetcher import fetch_environment_data
 from ecoorchestra.music.env_to_prompt import map_env_to_prompt
 from ecoorchestra.music.musicgen_infer import generate_music_from_prompt
-from ecoorchestra.blockchain.audio_uploader import AudioUploader
 
 # --- Path Configuration ---
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+# Ensure output folder exists
+OUTPUT_DIR = PROJECT_ROOT / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 def main():
@@ -22,7 +25,7 @@ def main():
         st.session_state.audio_bytes = None
     if 'generated' not in st.session_state:
         st.session_state.generated = False
-    if 'temp_file' not in st.session_state:  # NEW: Store temp file path
+    if 'temp_file' not in st.session_state:  # Store saved file path
         st.session_state.temp_file = None
 
     # User Input Form
@@ -54,8 +57,9 @@ def main():
                     st.session_state.audio_bytes = audio_bytes
                     st.session_state.generated = True
 
-                    # 4. Save to temp file (for optional upload)
-                    temp_path = Path("/tmp") / f"eco_music_{datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
+                    # 4. Save to output folder
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    temp_path = OUTPUT_DIR / f"eco_music_{timestamp}.wav"
                     with open(temp_path, "wb") as f:
                         f.write(audio_bytes.getbuffer())
                     st.session_state.temp_file = temp_path
@@ -70,10 +74,8 @@ def main():
     if st.session_state.generated and st.session_state.audio_bytes:
         st.audio(st.session_state.audio_bytes, format="audio/wav")
 
-        # Download and Upload Options
-        col1, col2 = st.columns(2)
-
-        # Standard Download
+        # Download Option
+        col1, _ = st.columns(2)
         col1.download_button(
             "Download Locally",
             data=st.session_state.audio_bytes,
@@ -82,23 +84,6 @@ def main():
             type="primary"
         )
 
-        # NEW: Greenfield Upload Button (Conditional)
-        if st.session_state.temp_file:
-            if col2.button("☁️ Upload to Greenfield", type="secondary"):
-                try:
-                    with st.spinner("Uploading to blockchain..."):
-                        uploader = AudioUploader()
-                        greenfield_url = uploader.upload(str(st.session_state.temp_file))
-                        st.session_state.temp_file.unlink()  # Cleanup
-                        st.session_state.temp_file = None
-
-                    st.success(f"✅ Uploaded! [View on Greenfield]({greenfield_url})")
-                    col2.markdown(
-                        f"🔗 [Blockchain Permalink]({greenfield_url})",
-                        help="Permanent decentralized storage"
-                    )
-                except Exception as e:
-                    st.error(f"Upload failed: {str(e)}")
 
 if __name__ == "__main__":
     main()
